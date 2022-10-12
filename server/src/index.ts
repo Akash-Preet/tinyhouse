@@ -1,17 +1,27 @@
+require("dotenv").config();
+
 import { ApolloServer } from "apollo-server-express";
 import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
 } from "apollo-server-core";
-import express from "express";
+import express, { Application } from "express";
 import http from "http";
 // import { schema } from "./graphql";
 import { typeDefs, resolvers } from "./graphql/index";
+import { connectDatabase } from "./database/index";
 
-async function startApolloServer() {
+import { Database } from "./lib/types";
+
+const mount = async (application: Application) => {
+  const db = await connectDatabase();
+
+  // const listings = await db.listings.find({}).toArray();
+  // console.log(listings);
+
   // Required logic for integrating with Express
   const app = express();
-  const port = 9000;
+  const port = process.env.PORT;
 
   // Our httpServer handles incoming requests to our Express app.
   // Below, we tell Apollo Server to "drain" this httpServer,
@@ -29,6 +39,7 @@ async function startApolloServer() {
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
+    context: () => ({ db }),
   });
 
   // More required logic for integrating with Express
@@ -40,7 +51,9 @@ async function startApolloServer() {
 
   // Modified server startup
   await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
-  console.log(`🚀 Server ready at http://localhost:9000${server.graphqlPath}`);
-}
+  console.log(
+    `🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`
+  );
+};
 
-startApolloServer();
+mount(express());
