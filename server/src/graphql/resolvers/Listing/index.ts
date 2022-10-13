@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
-import { Database, Listing } from "./../lib/types";
+import { Database, Listing } from "../../../lib/types";
 import { IResolvers } from "@graphql-tools/utils";
 
-export const resolvers: IResolvers = {
+export const listingResolvers: IResolvers = {
   Query: {
     listings: async (
       _root: undefined,
