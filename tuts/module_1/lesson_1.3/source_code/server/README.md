@@ -1,0 +1,2 @@
+- `npm install` to install package dependencies
+- `node src/index.js` to run minimal Node:Express server
